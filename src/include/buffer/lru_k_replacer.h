@@ -17,7 +17,6 @@
 #include <mutex>  // NOLINT
 #include <unordered_map>
 #include <vector>
-#include <iostream>
 
 #include "common/config.h"
 #include "common/macros.h"
@@ -39,8 +38,9 @@ class LRUKNode {
   LRUKNode() {
     history_ = new std::list<size_t>;
   }
+
+  // copy construct function
   LRUKNode(const LRUKNode& node) {
-    std::cout<< "拷贝构造函数调用" << std::endl;
     history_ = node.history_;
     k_ = node.k_;
     is_evictable_ = node.is_evictable_;

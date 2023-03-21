@@ -17,6 +17,7 @@
 #include <mutex>  // NOLINT
 #include <unordered_map>
 #include <vector>
+#include <iostream>
 
 #include "common/config.h"
 #include "common/macros.h"
@@ -26,14 +27,25 @@ namespace bustub {
 enum class AccessType { Unknown = 0, Get, Scan };
 
 class LRUKNode {
- private:
+ public:
   /** History of last seen K timestamps of this page. Least recent timestamp stored in front. */
   // Remove maybe_unused if you start using them. Feel free to change the member variables as you want.
 
-  [[maybe_unused]] std::list<size_t> history_;
-  [[maybe_unused]] size_t k_;
-  [[maybe_unused]] frame_id_t fid_;
-  [[maybe_unused]] bool is_evictable_{false};
+  std::list<size_t>* history_;
+  size_t k_;
+  bool is_evictable_{false};
+  frame_id_t fid_;
+
+  LRUKNode() {
+    history_ = new std::list<size_t>;
+  }
+  LRUKNode(const LRUKNode& node) {
+    std::cout<< "拷贝构造函数调用" << std::endl;
+    history_ = node.history_;
+    k_ = node.k_;
+    is_evictable_ = node.is_evictable_;
+    fid_ = node.fid_;
+  }
 };
 
 /**
@@ -150,12 +162,16 @@ class LRUKReplacer {
  private:
   // TODO(student): implement me! You can replace these member variables as you like.
   // Remove maybe_unused if you start using them.
-  [[maybe_unused]] std::unordered_map<frame_id_t, LRUKNode> node_store_;
-  [[maybe_unused]] size_t current_timestamp_{0};
-  [[maybe_unused]] size_t curr_size_{0};
-  [[maybe_unused]] size_t replacer_size_;
-  [[maybe_unused]] size_t k_;
-  [[maybe_unused]] std::mutex latch_;
+  std::unordered_map<frame_id_t, std::list<LRUKNode>::iterator> node_store_;
+  std::unordered_map<frame_id_t, std::list<LRUKNode>::iterator> cache_node_;
+  std::list<LRUKNode> lru_k_list_;  // storage for hot data
+  std::list<LRUKNode> cache_list_;  // storage for cold data
+  size_t current_timestamp_{0};
+  size_t curr_size_{0};   // current list size (incluing hot and cold)
+  size_t replacer_size_{0};  // number of evictable frame
+  size_t capacity_;   // list capacity
+  size_t k_;          // lru hot data threshhold
+  std::mutex latch_;
 };
 
 }  // namespace bustub

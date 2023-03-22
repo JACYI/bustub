@@ -127,7 +127,7 @@ void LRUKReplacer::SetEvictable(frame_id_t frame_id, bool set_evictable) {
                       static_cast<int>(cache_node_[frame_id]->is_evictable_);
     cache_node_[frame_id]->is_evictable_ = set_evictable;
   } else {
-    std::cout<<"Invalid Page id"<<std::endl;
+    std::cout<<"Invalid Page ID"<<std::endl;
     throw std::exception();
   }
 }
